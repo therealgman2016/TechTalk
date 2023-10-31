@@ -12,3 +12,7 @@ export async function getUserPokemon(user) {
 export async function updateNickname(pokemonId, updateData) {
     return sendRequest(`${BASE_URL}/${pokemonId}`, 'PATCH', updateData)
 }
+
+export async function deletePokemon(pokemonId) {
+    return sendRequest(`${BASE_URL}/${pokemonId}`, 'DELETE')
+}

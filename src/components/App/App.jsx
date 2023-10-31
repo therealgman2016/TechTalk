@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import { getUser } from '../../../utilities/user-services'
 import AuthPage from '../Auth/AuthPage/AuthPage'
 import NavBar from '../NavBar/NavBar'
-import IndexPage from '../POkedex/IndexPage/IndexPage'
+import IndexPage from '../Pokedex/IndexPage/IndexPage'
 import ShowPage from '../Pokedex/ShowPage/ShowPage'
 import UsersPokemon from '../Pokedex/UsersPokemon/UsersPokemon'
 
