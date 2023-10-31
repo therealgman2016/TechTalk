@@ -8,12 +8,20 @@ export default function UsersPokemon({ user }) {
   const [pokemon, setPokemon] = useState({});
   const navigate = useNavigate();
   
+  // Load captured Pokémon data from local storage
+  useEffect(() => {
+    const storedData = localStorage.getItem('capturedPokemon');
+    const parsedData = JSON.parse(storedData);
+    if (parsedData) {
+      setCapturedPokemon(parsedData);
+    }
+  }, []);
+
   useEffect(() => {
     // Search for the matching Pokémon in your local data
     const foundPokemon = data.find((p) => p.nickname === pokemonNickname);
 
     if (foundPokemon) {
-      console.log('Found Pokemon:', foundPokemon); // Check if it contains the ID
       setPokemon(foundPokemon);
       
       // Ensure id is a valid number
@@ -26,38 +34,43 @@ export default function UsersPokemon({ user }) {
   const [capturedPokemon, setCapturedPokemon] = useState(data);
 
   const handleChangeNickname = (id, newNickname) => {
-    // Validate that id is a number
     if (typeof id !== 'number') {
       console.error(`Invalid id: ${id}`);
-      return; // Exit the function to prevent further execution
-    }
-    
-    // Validate that nickname is a non-empty string
-    if (typeof newNickname !== 'string' || newNickname.trim() === '') {
-      console.error(`Invalid nickname: ${newNickname}`);
-      return; // Exit the function to prevent further execution
+      return;
     }
 
-    // Update the nickname in the state
+    if (typeof newNickname !== 'string' || newNickname.trim() === '') {
+      console.error(`Invalid nickname: ${newNickname}`);
+      return;
+    }
+
     setCapturedPokemon((prevCapturedPokemon) =>
       prevCapturedPokemon.map((p) =>
         p.id === id ? { ...p, nickname: newNickname } : p
       )
     );
-    
+
     // Update the nickname in your data source (data.js)
     updatePokemonNickname(id, newNickname);
 
-    console.log(`nickname: ${newNickname}, id: ${id}`);
+    // Save captured Pokémon data to local storage
+    localStorage.setItem('capturedPokemon', JSON.stringify(capturedPokemon));
   };
 
   const handleRelease = (id) => {
     deleteCapturedPokemon(id);
     setCapturedPokemon(capturedPokemon.filter((p) => p.id !== id));
+
+    // Save captured Pokémon data to local storage after deletion
+    localStorage.setItem('capturedPokemon', JSON.stringify(capturedPokemon));
   };
-const handleSubmit = (event, id) => {
+
+  const handleSubmit = (event, id) => {
     event.preventDefault();
     // You can add your submission logic here if needed
+
+    // Save captured Pokémon data to local storage after submitting
+    localStorage.setItem('capturedPokemon', JSON.stringify(capturedPokemon));
   };
 
   return (
@@ -67,15 +80,34 @@ const handleSubmit = (event, id) => {
         <div key={p.id}>
           <p>{p.name}</p>
           <p>{p.nickname}</p>
-            <PokemonForm
-                pokemon={p}
-                handleSubmit={handleSubmit}
-                handleChange={(id, newNickname) => handleChangeNickname(id, newNickname)}
-            />
-
+          <PokemonForm
+            pokemon={p}
+            handleSubmit={(event) => handleSubmit(event, p.id)} // Pass the ID
+            handleChange={(id, newNickname) => handleChangeNickname(id, newNickname)}
+          />
           <button onClick={() => handleRelease(p.id)}>Release to wild</button>
         </div>
       ))}
     </div>
   );
 }
+
+//   return (
+//     <div>
+//       <h2>Users Pokemon</h2>
+//       {capturedPokemon.map((p) => (
+//         <div key={p.id}>
+//           <p>{p.name}</p>
+//           <p>{p.nickname}</p>
+//             <PokemonForm
+//                 pokemon={p}
+//                 handleSubmit={handleSubmit}
+//                 handleChange={(id, newNickname) => handleChangeNickname(id, newNickname)}
+//             />
+
+//           <button onClick={() => handleRelease(p.id)}>Release to wild</button>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// }
